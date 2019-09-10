@@ -165,7 +165,7 @@ public class ServerConfig {
     public String getMetricsProviderClassName() {
         return metricsProviderClassName;
     }
-    public Properties getMetricsProviderConfiguration() {
+    public Properties  getMetricsProviderConfiguration() {
         return metricsProviderConfiguration;
     }
     /** Maximum number of pending socket connections to read, -1 if unset */

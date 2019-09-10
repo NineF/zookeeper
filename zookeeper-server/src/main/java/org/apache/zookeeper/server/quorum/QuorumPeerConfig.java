@@ -58,6 +58,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
+/**
+ * 从consf配置文件中读取出相应的配置
+ */
 @InterfaceAudience.Public
 public class QuorumPeerConfig {
 

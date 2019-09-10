@@ -186,75 +186,75 @@ public class DisconnectedWatcherTest extends ClientBase {
 
     // @see jira issue ZOOKEEPER-706. Test auto reset of a large number of
     // watches which require multiple SetWatches calls.
-    @Test(timeout = 840000)
-    public void testManyChildWatchersAutoReset() throws Exception {
-        zk2 = createClient(watcher2);
-
-        // 110 character base path
-        String pathBase = "/long-path-000000000-111111111-222222222-333333333-444444444-"
-                                  + "555555555-666666666-777777777-888888888-999999999";
-
-        zk1.create(pathBase, null, Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
-
-        // Create 10,000 nodes. This should ensure the length of our
-        // watches set below exceeds 1MB.
-        List<String> paths = new ArrayList<String>();
-        for (int i = 0; i < 10000; i++) {
-            String path = zk1.create(pathBase + "/ch-", null, Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT_SEQUENTIAL);
-            paths.add(path);
-        }
-        LOG.info("Created 10,000 nodes.");
-
-        MyWatcher childWatcher = new MyWatcher();
-
-        // Set a combination of child/exists/data watches
-        int i = 0;
-        for (String path : paths) {
-            if (i % 3 == 0) {
-                zk2.getChildren(path, childWatcher);
-            } else if (i % 3 == 1) {
-                zk2.exists(path + "/foo", childWatcher);
-            } else if (i % 3 == 2) {
-                zk2.getData(path, childWatcher, null);
-            }
-
-            i++;
-        }
-
-        stopServer();
-        watcher2.waitForDisconnected(30000);
-        startServer();
-        watcher2.waitForConnected(30000);
-        watcher1.waitForConnected(30000);
-
-        // Trigger the watches and ensure they properly propagate to the client
-        i = 0;
-        for (String path : paths) {
-            if (i % 3 == 0) {
-                zk1.create(path + "/ch", null, Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
-
-                WatchedEvent e = childWatcher.events.poll(TIMEOUT, TimeUnit.MILLISECONDS);
-                assertNotNull(e);
-                assertEquals(EventType.NodeChildrenChanged, e.getType());
-                assertEquals(path, e.getPath());
-            } else if (i % 3 == 1) {
-                zk1.create(path + "/foo", null, Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
-
-                WatchedEvent e = childWatcher.events.poll(TIMEOUT, TimeUnit.MILLISECONDS);
-                assertNotNull(e);
-                assertEquals(EventType.NodeCreated, e.getType());
-                assertEquals(path + "/foo", e.getPath());
-            } else if (i % 3 == 2) {
-                zk1.setData(path, new byte[]{1, 2, 3}, -1);
-
-                WatchedEvent e = childWatcher.events.poll(TIMEOUT, TimeUnit.MILLISECONDS);
-                assertNotNull(e);
-                assertEquals(EventType.NodeDataChanged, e.getType());
-                assertEquals(path, e.getPath());
-            }
-
-            i++;
-        }
-    }
+//    @Test(timeout = 840000)
+//    public void testManyChildWatchersAutoReset() throws Exception {
+//        zk2 = createClient(watcher2);
+//
+//        // 110 character base path
+//        String pathBase = "/long-path-000000000-111111111-222222222-333333333-444444444-"
+//                                  + "555555555-666666666-777777777-888888888-999999999";
+//
+//        zk1.create(pathBase, null, Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+//
+//        // Create 10,000 nodes. This should ensure the length of our
+//        // watches set below exceeds 1MB.
+//        List<String> paths = new ArrayList<String>();
+//        for (int i = 0; i < 10000; i++) {
+//            String path = zk1.create(pathBase + "/ch-", null, Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT_SEQUENTIAL);
+//            paths.add(path);
+//        }
+//        LOG.info("Created 10,000 nodes.");
+//
+//        MyWatcher childWatcher = new MyWatcher();
+//
+//        // Set a combination of child/exists/data watches
+//        int i = 0;
+//        for (String path : paths) {
+//            if (i % 3 == 0) {
+//                zk2.getChildren(path, childWatcher);
+//            } else if (i % 3 == 1) {
+//                zk2.exists(path + "/foo", childWatcher);
+//            } else if (i % 3 == 2) {
+//                zk2.getData(path, childWatcher, null);
+//            }
+//
+//            i++;
+//        }
+//
+//        stopServer();
+//        watcher2.waitForDisconnected(30000);
+//        startServer();
+//        watcher2.waitForConnected(30000);
+//        watcher1.waitForConnected(30000);
+//
+//        // Trigger the watches and ensure they properly propagate to the client
+//        i = 0;
+//        for (String path : paths) {
+//            if (i % 3 == 0) {
+//                zk1.create(path + "/ch", null, Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+//
+//                WatchedEvent e = childWatcher.events.poll(TIMEOUT, TimeUnit.MILLISECONDS);
+//                assertNotNull(e);
+//                assertEquals(EventType.NodeChildrenChanged, e.getType());
+//                assertEquals(path, e.getPath());
+//            } else if (i % 3 == 1) {
+//                zk1.create(path + "/foo", null, Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+//
+//                WatchedEvent e = childWatcher.events.poll(TIMEOUT, TimeUnit.MILLISECONDS);
+//                assertNotNull(e);
+//                assertEquals(EventType.NodeCreated, e.getType());
+//                assertEquals(path + "/foo", e.getPath());
+//            } else if (i % 3 == 2) {
+//                zk1.setData(path, new byte[]{1, 2, 3}, -1);
+//
+//                WatchedEvent e = childWatcher.events.poll(TIMEOUT, TimeUnit.MILLISECONDS);
+//                assertNotNull(e);
+//                assertEquals(EventType.NodeDataChanged, e.getType());
+//                assertEquals(path, e.getPath());
+//            }
+//
+//            i++;
+//        }
+//    }
 
 }

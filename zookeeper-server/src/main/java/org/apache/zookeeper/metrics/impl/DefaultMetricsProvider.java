@@ -38,6 +38,7 @@ import org.apache.zookeeper.server.metric.SimpleCounter;
 
 /**
  * Default implementation of {@link MetricsProvider}.<br>
+ *     不是一个具有真正上下结构的context，所有的指标被放在了单独的空间中
  * It does not implement a real hierarchy of contexts, but metrics are flattened
  * in a single namespace.<br>
  * It is mostly useful to make the legacy 4 letter words interface work as

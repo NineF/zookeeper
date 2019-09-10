@@ -90,18 +90,19 @@ public class ZooKeeperServerMain {
 
     protected void initializeAndRun(String[] args) throws ConfigException, IOException, AdminServerException {
         try {
+            //注册log4j JMXBean
             ManagedUtil.registerLog4jMBeans();
         } catch (JMException e) {
             LOG.warn("Unable to register log4j JMX control", e);
         }
-
+        //cfg文件解析，从里面获取zookeeper服务端的相关配置
         ServerConfig config = new ServerConfig();
         if (args.length == 1) {
             config.parse(args[0]);
         } else {
             config.parse(args);
         }
-
+        //根据配置运行
         runFromConfig(config);
     }
 

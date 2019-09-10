@@ -812,14 +812,14 @@
             <exclude>tests/wrappers-mt.opt</exclude>
             <exclude>**/c-doc.Doxyfile</exclude>
           </excludes>
-          <consoleOutput>true</consoleOutput>
+<!--          <consoleOutput>true</consoleOutput>-->
         </configuration>
       </plugin>
     </plugins>
 
     <resources>
       <resource>
-        <directory>${project.basedir}src/main/java/resources</directory>
+        <directory>${project.basedir}/src/main/java/resources</directory>
         <excludes>
           <exclude>**/*.*</exclude>
         </excludes>

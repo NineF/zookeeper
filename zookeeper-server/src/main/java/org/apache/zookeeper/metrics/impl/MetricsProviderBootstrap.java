@@ -35,6 +35,7 @@ public abstract class MetricsProviderBootstrap {
     public static MetricsProvider startMetricsProvider(
         String metricsProviderClassName,
         Properties configuration) throws MetricsProviderLifeCycleException {
+        // 通过反射生成provider,PrometheusMetricsProvider可提供http服务，默认的不提供服务
         try {
             Class<?> clazz = Class.forName(
                 metricsProviderClassName,

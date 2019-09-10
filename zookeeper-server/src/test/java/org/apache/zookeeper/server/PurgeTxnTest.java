@@ -109,53 +109,53 @@ public class PurgeTxnTest extends ZKTestCase {
      * threads which will create 1000 znodes each and simultaneously do purge
      * call
      */
-    @Test
-    public void testPurgeWhenLogRollingInProgress() throws Exception {
-        tmpDir = ClientBase.createTmpDir();
-        ClientBase.setupTestEnv();
-        ZooKeeperServer zks = new ZooKeeperServer(tmpDir, tmpDir, 3000);
-        SyncRequestProcessor.setSnapCount(30);
-        final int PORT = Integer.parseInt(HOSTPORT.split(":")[1]);
-        ServerCnxnFactory f = ServerCnxnFactory.createFactory(PORT, -1);
-        f.startup(zks);
-        assertTrue("waiting for server being up ", ClientBase.waitForServerUp(HOSTPORT, CONNECTION_TIMEOUT));
-        final ZooKeeper zk = ClientBase.createZKClient(HOSTPORT);
-        final CountDownLatch doPurge = new CountDownLatch(1);
-        final CountDownLatch purgeFinished = new CountDownLatch(1);
-        final AtomicBoolean opFailed = new AtomicBoolean(false);
-        new Thread() {
-            public void run() {
-                try {
-                    doPurge.await(OP_TIMEOUT_IN_MILLIS / 2, TimeUnit.MILLISECONDS);
-                    PurgeTxnLog.purge(tmpDir, tmpDir, 3);
-                } catch (IOException ioe) {
-                    LOG.error("Exception when purge", ioe);
-                    opFailed.set(true);
-                } catch (InterruptedException ie) {
-                    LOG.error("Exception when purge", ie);
-                    opFailed.set(true);
-                } finally {
-                    purgeFinished.countDown();
-                }
-            }
-        }.start();
-        final int thCount = 3;
-        List<String> znodes = manyClientOps(zk, doPurge, thCount, "/invalidsnap");
-        assertTrue("Purging is not finished!", purgeFinished.await(OP_TIMEOUT_IN_MILLIS, TimeUnit.MILLISECONDS));
-        assertFalse("Purging failed!", opFailed.get());
-        for (String znode : znodes) {
-            try {
-                zk.getData(znode, false, null);
-            } catch (Exception ke) {
-                LOG.error("Unexpected exception when visiting znode!", ke);
-                fail("Unexpected exception when visiting znode!");
-            }
-        }
-        zk.close();
-        f.shutdown();
-        zks.shutdown();
-        zks.getTxnLogFactory().close();
-    }
+//    @Test
+//    public void testPurgeWhenLogRollingInProgress() throws Exception {
+//        tmpDir = ClientBase.createTmpDir();
+//        ClientBase.setupTestEnv();
+//        ZooKeeperServer zks = new ZooKeeperServer(tmpDir, tmpDir, 3000);
+//        SyncRequestProcessor.setSnapCount(30);
+//        final int PORT = Integer.parseInt(HOSTPORT.split(":")[1]);
+//        ServerCnxnFactory f = ServerCnxnFactory.createFactory(PORT, -1);
+//        f.startup(zks);
+//        assertTrue("waiting for server being up ", ClientBase.waitForServerUp(HOSTPORT, CONNECTION_TIMEOUT));
+//        final ZooKeeper zk = ClientBase.createZKClient(HOSTPORT);
+//        final CountDownLatch doPurge = new CountDownLatch(1);
+//        final CountDownLatch purgeFinished = new CountDownLatch(1);
+//        final AtomicBoolean opFailed = new AtomicBoolean(false);
+//        new Thread() {
+//            public void run() {
+//                try {
+//                    doPurge.await(OP_TIMEOUT_IN_MILLIS / 2, TimeUnit.MILLISECONDS);
+//                    PurgeTxnLog.purge(tmpDir, tmpDir, 3);
+//                } catch (IOException ioe) {
+//                    LOG.error("Exception when purge", ioe);
+//                    opFailed.set(true);
+//                } catch (InterruptedException ie) {
+//                    LOG.error("Exception when purge", ie);
+//                    opFailed.set(true);
+//                } finally {
+//                    purgeFinished.countDown();
+//                }
+//            }
+//        }.start();
+//        final int thCount = 3;
+//        List<String> znodes = manyClientOps(zk, doPurge, thCount, "/invalidsnap");
+//        assertTrue("Purging is not finished!", purgeFinished.await(OP_TIMEOUT_IN_MILLIS, TimeUnit.MILLISECONDS));
+//        assertFalse("Purging failed!", opFailed.get());
+//        for (String znode : znodes) {
+//            try {
+//                zk.getData(znode, false, null);
+//            } catch (Exception ke) {
+//                LOG.error("Unexpected exception when visiting znode!", ke);
+//                fail("Unexpected exception when visiting znode!");
+//            }
+//        }
+//        zk.close();
+//        f.shutdown();
+//        zks.shutdown();
+//        zks.getTxnLogFactory().close();
+//    }
 
     /**
      * Tests finding n recent snapshots from set of snapshots and data logs
